@@ -1,0 +1,3545 @@
+---
+swagger: "2.0"
+info:
+  description: GenCall System Telecalling Service API Documentation
+  version: "2.0"
+  title: GenCall System API's
+  x-logo:
+    url: "https://firebasestorage.googleapis.com/v0/b/lilchirp-io.appspot.com/o/logo.png?alt=media&token=3178b5f8-84ff-426d-ba89-8088fa2c4d92"
+    backgroundColor: "#FFFFFF"
+    altText: "GenCall System"
+  termsOfService: https://gencallsystem.com/terms-of-use
+  contact:
+    email: developers@gencallsystem.com
+  # license:
+  #   name: Apache 2.0
+  #   url: http://www.apache.org/licenses/LICENSE-2.0.html
+schemes:
+  - https
+host: api.gencallsystem.com
+basePath: /
+
+tags:
+  - name: Authentication
+    description: GenCall System uses Bearer as well as API Key for authentication. Include your token in the HTTP Authorization header. you can get the access token by using below API's. The Auth token will be valid till 24 hours. If you are looking for the API Key's for your account, please contact the GenCall System dev support or drop a mail at developers@gencallsystem.com.
+  - name: Projects
+    description: GenCall System manages different projects in a single account so that you can create different bots entirely isolated from eachother for your different use cases.
+  - name: Audience
+    description: Once your project is setup, we will use audience module to add the information of the target audience like their name, mobile no. to call.
+  - name: Call Trigger
+    description: Once your project is setup, we will use audience module to add the information of the target audience like their name, mobile no. to call.
+
+paths:
+  /api/v1/login:
+    post:
+      tags:
+        - Authentication
+      summary: Token Generation and user Validation
+      description: provide your account email and password to get corresponding token.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Sample Data
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "_id": { "type": "string" },
+                        "email": { "type": "string" },
+                        "accounts":
+                          {
+                            "type": "array",
+                            "items":
+                              [
+                                {
+                                  "type": "object",
+                                  "properties":
+                                    {
+                                      "_id": { "type": "string" },
+                                      "accountUrl": { "type": "string" },
+                                      "accountName": { "type": "string" },
+                                      "currency": { "type": "string" },
+                                    },
+                                  "required":
+                                    [
+                                      "_id",
+                                      "accountUrl",
+                                      "accountName",
+                                      "currency",
+                                    ],
+                                },
+                              ],
+                          },
+                        "adminAccess":
+                          {
+                            "type": "array",
+                            "items":
+                              [
+                                {
+                                  "type": "object",
+                                  "properties":
+                                    {
+                                      "isAdmin": { "type": "boolean" },
+                                      "accountId": { "type": "string" },
+                                    },
+                                  "required": ["isAdmin", "accountId"],
+                                },
+                              ],
+                          },
+                        "lastLogin":
+                          {
+                            "type": "object",
+                            "properties":
+                              {
+                                "accountId": { "type": "string" },
+                                "time": { "type": "string" },
+                              },
+                            "required": ["accountId", "time"],
+                          },
+                        "token": { "type": "string" },
+                      },
+                  },
+              }
+        "404":
+          description: error
+          schema:
+            type: object
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "errMsg": { "type": "string" },
+              }
+            example:
+              status: 404
+              errMsg: "Invalid Username/Password"
+
+  /api/v1/project:
+    post:
+      tags:
+        - "Projects"
+      summary: "Create Projects"
+      description: "This API will create a new project and add it to your account."
+
+      x-swagger-router-controller: "projectController"
+      operationId: createProjectController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: unique key which you will be receiving in the login API, under account section with the name of accountUrl
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/createProject"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      tags:
+        - "Projects"
+      summary: "Get All projects"
+      description: "Get All projects"
+
+      x-swagger-router-controller: "projectController"
+      operationId: getAllProjectsController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: unique key which you will be receiving in the login API, under account section with the name of accountUrl
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - "Projects"
+      summary: "delete projects"
+      description: "This API will delete the exisiting project on request"
+
+      x-swagger-router-controller: "projectController"
+      operationId: deleteProjectsController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: project Id;
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "acknowledged": {
+                    "type": "boolean"
+                  },
+                  "deletedCount": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "acknowledged",
+                  "deletedCount"
+                ]
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /api/v1/audience:
+    post:
+      tags:
+        - "Audience"
+      summary: "create Audience List"
+      description: "create Audience"
+      operationId: createAudienceController
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: unique key which you will be receiving in the login API, under account section with the name of accountUrl
+
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/AudienceList"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+      x-swagger-router-controller: "audienceController"
+
+  /api/v1/audience/{id}:
+    get:
+      tags:
+        - "Audience"
+      summary: "get Audience List"
+      description: "get Audience"
+      operationId: getAudienceController
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: unique key which you will be receiving in the login API, under account section with the name of accountUrl
+
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Project Id.
+        - in: query
+          name: pageIndex
+          type: integer
+          required: true
+          description: offset value
+        - in: query
+          name: pageSize
+          type: integer
+          required: true
+          description: limit value
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "totalCount": {
+                    "type": "integer"
+                  },
+                  "doc": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string"
+                          },
+                          "projectId": {
+                            "type": "string"
+                          },
+                          "audienceName": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "audienceList": {
+                            "type": "array",
+                            "items": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "firstName": {
+                                    "type": "string"
+                                  },
+                                  "lastName": {
+                                    "type": "string"
+                                  },
+                                  "phone": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "firstName",
+                                  "lastName",
+                                  "phone"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "firstName": {
+                                    "type": "string"
+                                  },
+                                  "lastName": {
+                                    "type": "string"
+                                  },
+                                  "phone": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "firstName",
+                                  "lastName",
+                                  "phone"
+                                ]
+                              }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                },
+                "__v": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "_id",
+                "projectId",
+                "audienceName",
+                "source",
+                "audienceList",
+                "createdAt",
+                "updatedAt",
+                "__v"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "totalCount",
+        "doc"
+      ]
+    }
+  }
+  
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+      x-swagger-router-controller: "audienceController"
+    put:
+      tags:
+        - "Audience"
+      summary: "Edit Audience List"
+      description: "Edit Audience"
+      operationId: updateAudienceController
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The user ID.
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/AudienceList"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+      x-swagger-router-controller: "audienceController"
+    delete:
+      tags:
+        - "Audience"
+      summary: "delete Audience List by Id"
+      description: "delete Audience"
+      operationId: deleteAudienceController
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: unique key which you will be receiving in the login API, under account section with the name of accountUrl
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The user ID.
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+      x-swagger-router-controller: "audienceController"
+
+  /api/v1/trigger-call:
+    post:
+      tags:
+        - "Call Trigger"
+      summary: "Run Campaign"
+      description: "Run Campaign"
+
+      x-swagger-router-controller: "triggerCallController"
+      operationId: triggerAutomaticCallController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: API Key for your account
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/triggerCall"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/campaigns/{id}:
+    get:
+      tags:
+        - "Campaign"
+      summary: "Get All campaign"
+      description: "Get All campaign"
+
+      x-swagger-router-controller: "campaignController"
+      operationId: getCampaignController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: project Id;
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: query
+          name: pageIndex
+          type: integer
+          required: true
+          description: offset value
+        - in: query
+          name: pageSize
+          type: integer
+          required: true
+          description: limit value
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete:
+      tags:
+        - "Campaign"
+      summary: "delete campaign"
+      description: "delete campaign"
+
+      x-swagger-router-controller: "campaignController"
+      operationId: deleteCampaignController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Campaign ID.
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/campaigns:
+    post:
+      tags:
+        - "Campaign"
+      summary: "Create Campaign"
+      description: "Create Campaign"
+
+      x-swagger-router-controller: "campaignController"
+      operationId: createCampaignController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/campaign"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /api/v1/agent/import:
+    post:
+      tags:
+        - "Agent"
+      summary: "import agent"
+      description: "import agent"
+
+      operationId: agentSettingImportController
+      x-swagger-router-controller: "promptsController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/agentSettingImport"
+          
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "data": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "projectId": {
+                        "type": "string"
+                      },
+                      "conversationData": {
+                        "type": "array",
+                        "items": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "input": {
+                                "type": "string"
+                              },
+                              "output": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "input",
+                              "output"
+                            ]
+                          }
+                        ]
+                      },
+                      "agentName": {
+                        "type": "string"
+                      },
+                      "organisationName": {
+                        "type": "string"
+                      },
+                      "greetingMessage": {
+                        "type": "string"
+                      },
+                      "context": {
+                        "type": "string"
+                      },
+                      "rules": {
+                        "type": "string"
+                      },
+                      "objections": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "voicemailMessage": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      },
+                      "__v": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "projectId",
+                      "conversationData",
+                      "agentName",
+                      "organisationName",
+                      "greetingMessage",
+                      "context",
+                      "rules",
+                      "objections",
+                      "voicemailMessage",
+                      "createdAt",
+                      "updatedAt",
+                      "__v"
+                    ]
+                  }
+                ]
+              }
+            }
+
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/default-agent/{id}:
+    post:
+      tags:
+        - "Agent"
+      summary: "Set default agent"
+      description: "Set default agent"
+
+      x-swagger-router-controller: "agentSettingController"
+      operationId: defaultAgentSettingController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: project Id;
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/defaultAgent"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/advance-settings/{id}:
+    get:
+      tags:
+        - "advance Settings"
+      summary: "get advance Settings"
+      description: "get advance Settings"
+
+      operationId: getAdvSettingController
+      x-swagger-router-controller: "advanceSettingController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Project Id.
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - "advance Settings"
+      summary: "create or update advance Settings"
+      description: "create or update advance Settings"
+
+      x-swagger-router-controller: "advanceSettingController"
+      operationId: createOrUpdateAdvanceSettingController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Project Id.
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/advanceSetting"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/call-settings/{id}:
+    get:
+      tags:
+        - "Call Setting"
+      summary: "get Call Setting by projectId"
+      description: "get Call Setting"
+
+      operationId: getCallSettingController
+      x-swagger-router-controller: "callSettingController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Project Id.
+
+        # - in: query
+        #   name: pageIndex
+        #   type: integer
+        #   required: true
+        #   description: offset value
+        # - in: query
+        #   name: pageSize
+        #   type: integer
+        #   required: true
+        #   description: limit value
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string"
+                      },
+                      "projectId": {
+                        "type": "string"
+                      },
+                      "asrEngine": {
+                        "type": "string"
+                      },
+                      "gateway": {
+                        "type": "string"
+                      },
+                      "responseFormat": {
+                        "type": "string"
+                      },
+                      "voice": {
+                        "type": "string"
+                      },
+                      "languageCode": {
+                        "type": "string"
+                      },
+                      "voiceMailDetection": {
+                        "type": "boolean"
+                      },
+                      "interrupt": {
+                        "type": "boolean"
+                      },
+                      "silentThreshold": {
+                        "type": "integer"
+                      },
+                      "createdAt": {
+                        "type": "string" 
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      },
+                      "__v": {
+                        "type": "integer"
+                      },
+                      "callTransferNumber": {
+                        "type": "string"
+                      },
+                      "callerIdNumber": {
+                        "type": "string"
+                      },
+                      "checkDnc": {
+                        "type": "boolean"
+                      },
+                      "checkDnd": {
+                        "type": "boolean"
+                      },
+                      "checkUser": {
+                        "type": "boolean"
+                      },
+                      "disconnectedTime": {
+                        "type": "string"
+                      },
+                      "pauseBetweenSentence": {
+                        "type": "string"
+                      },
+                      "temperature": {
+                        "type": "string"
+                      },
+                      "transferWebhook": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+            
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - "Call Setting"
+      summary: "delete call Setting by Id"
+      description: "delete call Setting by Id"
+
+      operationId: deleteCallSettingController
+      x-swagger-router-controller: "callSettingController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The document Id.
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/call-settings:
+    post:
+      tags:
+        - "Call Setting"
+      summary: ""
+      description: "Call Setting"
+      operationId: addCallSettingController
+      x-swagger-router-controller: "callSettingController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/callSetting"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": object
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "acknowledged": { "type": "boolean" },
+                        "modifiedCount": { "type": "integer" },
+                        "upsertedId": { "type": "null" },
+                        "upsertedCount": { "type": "integer" },
+                        "matchedCount": { "type": "integer" },
+                      },
+                  },
+              }
+            # $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/verify-otp:
+    post:
+      tags:
+        - "Voximplant"
+      summary: "Voximplant verify otp"
+      description: "Voximplant"
+
+      operationId: voximplantVerifyOtpController
+      x-swagger-router-controller: "voximplantOtpController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/voximplantVerifyOtp"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+        default:
+          description: error
+          schema: 
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/create-otp:
+    post:
+      tags:
+        - "Voximplant"
+      summary: "Voximplant create otp"
+      description: "Voximplant"
+      operationId: voximplantGetOtpController
+      x-swagger-router-controller: "voximplantOtpController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/voximplantGetOtp"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "otp": {
+                "type": "string"
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/agent-setting:
+    post:
+      tags:
+        - "Agent Setting"
+      summary: "create Agent Setting"
+      description: "create or update Agent Setting"
+
+      operationId: createPromptsController
+      x-swagger-router-controller: "promptsController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/agentSetting"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      tags:
+        - "Agent Setting"
+      summary: "get Agent Setting"
+      description: "get Agent Setting"
+
+      operationId: getAgentSettingController
+      x-swagger-router-controller: "promptsController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    put:
+      tags:
+        - "Agent Setting"
+      summary: "edit Agent Setting"
+      description: "edit Agent Setting"
+
+      operationId: updatePromptsController
+      x-swagger-router-controller: "promptsController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_key
+        - in: path
+          name: id
+          required: true
+          type: string
+          minimum: 1
+          description: The project ID.
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/agentSetting"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "acknowledged": {
+                    "type": "boolean"
+                  },
+                  "modifiedCount": {
+                    "type": "integer"
+                  },
+                  "upsertedId": {
+                    "type": "null"
+                  },
+                  "upsertedCount": {
+                    "type": "integer"
+                  },
+                  "matchedCount": {
+                    "type": "integer"
+                  }
+                },
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/recording:
+    post:
+      tags:
+        - "Recording"
+      summary: "Add Recording"
+      description: "Add Recording"
+
+      operationId: createRecordingController
+      x-swagger-router-controller: "recordingController"
+
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: formData
+          name: file
+          type: file
+          required: false
+          description: The file to upload.
+        - in: formData
+          name: projectId
+          type: string
+          required: false
+          description: projectId
+        - in: formData
+          name: recordingName
+          type: string
+          required: false
+          description: recordingName
+        - in: formData
+          name: tag
+          type: string
+          required: false
+          description: tag
+        - in: formData
+          name: recordingUrl
+          type: string
+          required: false
+          description: recordingUrl
+        - in: formData
+          name: isFromTemplate
+          type: boolean
+          required: false
+          description: isFromTemplate
+        - in: formData
+          name: helperText
+          type: string
+          required: false
+          description: helperText
+        # - in: body
+        #   name: body
+        #   description: payload
+        #   required: true
+        #   schema:
+        #     $ref: "#/definitions/recordings"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /dashboard:
+    get:
+      tags:
+        - "Dashboard"
+      summary: "Dashboard API"
+      description: "Dashboard API"
+
+      x-swagger-router-controller: "dashboardController"
+      operationId: getDashboardController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "totalDuration": {
+                    "type": "integer"
+                  },
+                "totalCost": {
+                  "type": "string"
+                },
+                "balance": {
+                  "type": "string"
+                },
+                "onHoldBalance": {
+                  "type": "string"
+                },
+                "remainingMinutes": {
+                  "type": "integer"
+                },
+                "totalCallsMade": {
+                  "type": "integer"
+                },
+                "callStatus": {
+                  "type": "object",
+                  "properties": {
+                    "totalFailed": {
+                      "type": "integer"
+                    },
+                    "totalEnded": {
+                      "type": "integer"
+                    },
+                    "undefined": {
+                      "type": "integer"
+                    },
+                    "totalConnected": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "totalFailed",
+                    "totalEnded",
+                    "undefined",
+                    "totalConnected"
+                  ]
+                }
+              }
+          }
+        }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/dashboard/chart:
+    get:
+      tags:
+        - "Dashboard"
+      summary: "Dashboard charts API"
+      description: "Dashboard charts API"
+
+      x-swagger-router-controller: "dashboardController"
+      operationId: getDashboardChartsController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "2023-12-20": {
+                    "type": "integer"
+                  },
+                  "2023-12-19": {
+                    "type": "integer"
+                  },
+                  "2023-12-18": {
+                    "type": "integer"
+                  },
+                  "2023-12-17": {
+                    "type": "integer"
+                  },
+                  "2023-12-16": {
+                    "type": "integer"
+                  },
+                  "2023-12-15": {
+                    "type": "integer"
+                  },
+                  "2023-12-14": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+            # $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/campaign-runs/{projectId}/{campaignId}:
+    get:
+      tags:
+        - "Campaign Runs"
+      summary: "Get All campaign runs"
+      description: "Get All campaign runs"
+
+      x-swagger-router-controller: "campaignRunController"
+      operationId: getCampaignRunController
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: path
+          name: projectId # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: account Name;
+        - in: path
+          name: campaignId # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Campaign ID.
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        # - in: query
+        #   name: offset
+        #   type: integer
+        #   required: true
+        #   description: offset value
+        # - in: query
+        #   name: limit
+        #   type: integer
+        #   required: true
+        #   description: limit value
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /api/v1/campaign-run/details/{projectId}/{campaignrunId}:
+    get:
+      tags:
+        - "Run Campaign Details"
+      summary: "GET Run Campaign Details"
+      description: "get Run Campaign details"
+
+      operationId: getCampaignRunDetailsController
+      x-swagger-router-controller: "campaignRunDetailsController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: projectId
+          required: true
+          type: string
+          minimum: 1
+          description: The Project ID.
+        - in: path
+          name: campaignrunId # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Campaign Run Id.
+        - in: query
+          name: pageIndex
+          type: integer
+          required: true
+          description: offset value
+        - in: query
+          name: pageSize
+          type: integer
+          required: true
+          description: limit value
+        - in: query
+          name: live
+          type: boolean
+          required: true
+          description: limit value
+        - in: query
+          name: duration
+          type: string
+          required: false
+          description: duration
+        - in: query
+          name: callStatus
+          type: string
+          required: false
+          description: callStatus
+        - in: query
+          name: outcome
+          type: array
+          items:
+            type: string
+          required: false
+          description: outcome
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "countsData":
+                          {
+                            "type": "array",
+                            "items":
+                              [
+                                {
+                                  "type": "object",
+                                  "properties":
+                                    {
+                                      "_id": { "type": "string" },
+                                      "count": { "type": "integer" },
+                                    },
+                                  "required": ["_id", "count"],
+                                },
+                              ],
+                          },
+                        "doc":
+                          {
+                            "type": "array",
+                            "items":
+                              [
+                                {
+                                  "type": "object",
+                                  "properties":
+                                    {
+                                      "_id": { "type": "string" },
+                                      "projectId": { "type": "string" },
+                                      "campaignRunId": { "type": "string" },
+                                      "callCode": { "type": "integer" },
+                                      "callStatus": { "type": "string" },
+                                      "cost": { "type": "string" },
+                                      "newCost": { "type": "string" },
+                                      "callRecordingUrl": { "type": "string" },
+                                      "outComes":
+                                        { "type": "array", "items": {} },
+                                      "phone": { "type": "string" },
+                                      "call_uuid": { "type": "string" },
+                                      "createdAt": { "type": "string" },
+                                      "updatedAt": { "type": "string" },
+                                      "currency": { "type": "string" },
+                                      "duration": { "type": "integer" },
+                                      "price": { "type": "string" },
+                                      "unit": { "type": "string" },
+                                      "fixedCost": { "type": "integer" },
+                                    },
+                                },
+                              ],
+                          },
+                        "totalCount": { "type": "integer" },
+                      },
+                    "required": ["countsData", "doc", "totalCount"],
+                  },
+              }
+
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/appointment-settings:
+    post:
+      tags:
+        - "Appointment Settings"
+      summary: ""
+      description: "Appointment Settings"
+      operationId: addAppointmentSettingController
+      x-swagger-router-controller: "appointmentController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/appointmentSetting"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "acknowledged": {
+                    "type": "boolean"
+                  },
+                  "modifiedCount": {
+                    "type": "integer"
+                  },
+                  "upsertedId": {
+                    "type": "null"
+                  },
+                  "upsertedCount": {
+                    "type": "integer"
+                  },
+                  "matchedCount": {
+                    "type": "integer"
+                  }
+                },
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /v1/appointment-settings/{id}:
+    get:
+      tags:
+        - "Appointment Settings"
+      summary: "get appointment Setting by projectId"
+      description: "get appointment Setting"
+
+      operationId: getAppointmentSettingController
+      x-swagger-router-controller: "appointmentController"
+
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: auth_token
+        - in: header
+          name: dburl
+          type: string
+          required: true
+          description: db_url
+        - in: path
+          name: id # Note the name is the same as in the path
+          required: true
+          type: string
+          minimum: 1
+          description: The Project Id.
+
+        # - in: query
+        #   name: pageIndex
+        #   type: integer
+        #   required: true
+        #   description: offset value
+        # - in: query
+        #   name: pageSize
+        #   type: integer
+        #   required: true
+        #   description: limit value
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            "type": "object"
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string"
+                      },
+                      "projectId": {
+                        "type": "string"
+                      },
+                      "slots_availability": {
+                        "type": "string"
+                      },
+                      "slots_index": {
+                        "type": "array",
+                        "items": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ]
+                      },
+                      "slots_error": {
+                        "type": "string"
+                      },
+                      "no_slots_available": {
+                        "type": "string"
+                      },
+                      "error_booking_appointment": {
+                        "type": "string"
+                      },
+                      "appointment_booked": {
+                        "type": "string"
+                      },
+                      "slots_separator": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      },
+                      "__v": {
+                        "type": "integer"
+                      }
+                    },
+                  }
+                ]
+              }
+            }
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /analyze/summary:
+    post:
+      tags:
+        - analyze
+      summary: Summarize
+      operationId: summarize_analyze_summary_post
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Summary"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/SummaryOutput"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/HTTPValidationError"
+
+  /analyze/transcript/{call_uuid}:
+    get:
+      tags:
+        - analyze
+      summary: Gets ths transcript of a call UUID
+      description: Gets the transcript of a call
+      operationId: get_transcript_analyze_transcript__call_uuid__get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            title: Call Uuid
+          name: call_uuid
+          in: path
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/HTTPValidationError"
+
+  # /refresh-token:
+  #   post:
+  #     tags:
+  #     - Token
+  #     summary: Refresh Token
+  #     description: In case our token got invalid, we can call this API for new refresh token, here we need two fields "token" i.e. your expired token and "refresh_token" - this will be provided by the API admin.
+  #     operationId: refreshToken
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         type: object
+  #         properties:
+  #           token:
+  #             type: string
+  #           refresh_token:
+  #             type: string
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             token:
+  #               type: string
+  #            example:
+  #               status: 200
+  #               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lIjoiV2VkIE1hciAwMSAyMDIzIDE1OjA2OjQzIEdNVCswNTMwIChJbmRpYSBTdGFuZGFyZCBUaW1lKSIsInVzZXJJZCI6eyJ1c2VySWQiOiJONG11eFZCTjdxTnNhQzl1enBuQkd5a"
+
+  #       "502":
+  #         description: if invalid token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 502
+  #               msg: "invalid token"
+
+  #       "403":
+  #         description: if invalid refresh_token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "invalid refresh token"
+
+  # /trigger-call:
+  #   post:
+  #     tags:
+  #     - Call Trigger
+  #     summary: trigger individual calls on mobile number with Voximplant(service Provider)
+  #     description: with this API we can directly call any number, given all the setups has been done manually in the witness account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: need to pass token we received at "/token" API and pass it in format "Bearer eyxzhy..."
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/trigger_call'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #             campaignRunId:
+  #               type: string
+  #             timeStamp:
+  #               type: string
+  #            example:
+  #             status: 200
+  #             msg: "campaign run started successfully"
+  #             campaignRunId: "Ajb8JoJ5WMrMAfPGW1U2"
+  #             timeStamp: "Wed, Mar 1, 2023 9:58 PM"
+  #       "507":
+  #         description: if greeting recording is not present in the account
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+  #            example:
+  #               status: 507
+  #               errMsg: "Please add Greeting or Invitation recordings"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  # /v1/trigger-call:
+  #   post:
+  #     tags:
+  #     - Call Trigger
+  #     summary: trigger individual calls on mobile number with witness(service Provider)
+  #     description: with this API we can directly call any number, given all the setups has been done manually in the witness account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: need to pass token we received at "/token" API and pass it in format "Bearer eyxzhy..."
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/trigger_call'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #             campaignRunId:
+  #               type: string
+  #             timeStamp:
+  #               type: string
+  #            example:
+  #             status: 200
+  #             msg: "campaign run started successfully"
+  #             campaignRunId: "Ajb8JoJ5WMrMAfPGW1U2"
+  #             timeStamp: "Wed, Mar 1, 2023 9:58 PM"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  # /run-campaign-details/{campaignrunId}:
+  #   get:
+  #     tags:
+  #     - Run Campaign
+  #     summary: GET Run Campaign Details
+  #     description: In this API, you can get the status and details of all calls which has been triggered on a campaign at a perticular time, we just need to provide the campaign run Id corresponding to that time.
+  #     operationId: runCampaignDetailsController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_token
+  #       required: true
+  #       type: string
+  #     - name: campaignrunId
+  #       in: path
+  #       description: The Campaign Run Id.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             data:
+  #               type: array
+  #               items:
+  #                 type: object
+  #                 properties:
+  #                   callCode:
+  #                     type: string
+  #                   phone:
+  #                     type: string
+  #                   unit:
+  #                     type: string
+  #                   duration:
+  #                     type: string
+  #                   newCost:
+  #                     type: string
+  #                   cost:
+  #                     type: string
+  #                   callRecordingUrl:
+  #                     type: string
+  #                   currency:
+  #                     type: string
+  #                   callStatus:
+  #                     type: string
+  #                   price:
+  #                     type: string
+
+  #            example:
+  #             status: 200
+  #             data: [
+  #               {
+  #                 callCode: "campaign run started successfully",
+  #                 phone: "Ajb8JoJ5WMrMAfPGW1U2",
+  #                 unit: "Wed, Mar 1, 2023 9:58 PM",
+  #                 duration: "Wed, Mar 1, 2023 9:58 PM",
+  #                 newCost: "Wed, Mar 1, 2023 9:58 PM",
+  #                 cost: "Wed, Mar 1, 2023 9:58 PM",
+  #                 callRecordingUrl: "Wed, Mar 1, 2023 9:58 PM",
+  #                 currency: "Wed, Mar 1, 2023 9:58 PM",
+  #                 callStatus: "Wed, Mar 1, 2023 9:58 PM",
+  #                 price: "Wed, Mar 1, 2023 9:58 PM"
+  #               }
+  #             ]
+
+  #       "507":
+  #         description: if campaign run Id is not provided
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+  #            example:
+  #               status: 507
+  #               errMsg: "Please provide campaign run Id"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  # /audience/{id}:
+  #   get:
+  #     tags:
+  #     - Audience
+  #     summary: get Audience by Id
+  #     description: get Audience
+  #     operationId: getAudienceController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - name: id
+  #       in: path
+  #       description: The user ID.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             data:
+  #               type: object
+  #               properties:
+  #                 id:
+  #                   type: string
+  #                 audienceListName:
+  #                   type: string
+  #                 userEmail:
+  #                   type: string
+  #                 source:
+  #                   type: string
+  #                 audienceList:
+  #                    type: array
+  #                    items:
+  #                     type: object
+  #                     properties:
+  #                       firstName:
+  #                          type: string
+  #                       lastname:
+  #                         type: string
+  #                       phone:
+  #                         type: string
+
+  #            example:
+  #             status: 200
+  #             data:
+  #               {
+  #                 id: "Uc7nKPpj3mHyciajL3eB",
+  #                 audienceListName: "test",
+  #                 userEmail: "api_test@witness.ai",
+  #                 source: "manual",
+  #                 audienceList: [
+  #                   {
+  #                     firstName: "John",
+  #                     lastName: "Doe",
+  #                     phone: "918989579220"
+  #                   }
+  #                 ]
+  #               }
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  #   put:
+  #     tags:
+  #     - Audience
+  #     summary: Edit Audience List
+  #     description: Edit Audience
+  #     operationId: updateAudienceController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - name: id
+  #       in: path
+  #       description: The user ID.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/AudienceList'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+
+  #            example:
+  #             status: 200
+  #             msg: "Audience list updated successfully"
+
+  #       "506":
+  #         description: audience list not found
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+
+  #            example:
+  #             status: 506
+  #             errMsg: "Audience List not found with the given Id"
+
+  #       "507":
+  #         description: Server Error
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+
+  #            example:
+  #             status: 507
+  #             errMsg: "something went wrong while creating account"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  #   delete:
+  #     tags:
+  #     - Audience
+  #     summary: delete Audience List by Id
+  #     description: delete Audience
+  #     operationId: deleteAudienceController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - name: id
+  #       in: path
+  #       description: The user ID.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+
+  #            example:
+  #             status: 200
+  #             msg: "Audience list deleted successfully"
+
+  #       "506":
+  #         description: audience list not found
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+
+  #            example:
+  #             status: 506
+  #             errMsg: "Audience List not found with the given Id"
+
+  #       "507":
+  #         description: Server Error
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+
+  #            example:
+  #             status: 507
+  #             errMsg: "something went wrong"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  # /audience:
+  #   get:
+  #     tags:
+  #     - Audience
+  #     summary: get all Audience
+  #     description: get Audience
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             data:
+  #               type: array
+  #               items:
+  #                 type: object
+  #                 properties:
+  #                   id:
+  #                     type: string
+  #                   audienceListName:
+  #                     type: string
+  #                   userEmail:
+  #                     type: string
+  #                   source:
+  #                     type: string
+  #                   audienceList:
+  #                     type: array
+  #                     items:
+  #                       type: object
+  #                       properties:
+  #                         firstName:
+  #                           type: string
+  #                         lastname:
+  #                           type: string
+  #                         phone:
+  #                           type: string
+  #                   totalAudience:
+  #                     type: number
+  #                   totalContacts:
+  #                     type: number
+
+  #            example:
+  #             status: 200
+  #             data: [
+  #               {
+  #                 id: "Uc7nKPpj3mHyciajL3eB",
+  #                 audienceListName: "test",
+  #                 userEmail: "api_test@witness.ai",
+  #                 source: "manual",
+  #                 audienceList: [
+  #                   {
+  #                     firstName: "John",
+  #                     lastName: "Doe",
+  #                     phone: "918989579220"
+  #                   }
+  #                 ]
+  #               }
+  #             ]
+  #             totalAudience: 1
+  #             totalContacts: 1
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  #   post:
+  #     tags:
+  #     - Audience
+  #     summary: create Audience
+  #     description: create Audience
+  #     operationId: createAudienceController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/AudienceList'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #             listId:
+  #               type: string
+
+  #            example:
+  #             status: 200
+  #             msg: "audience List Created Successfully"
+  #             listId: "lxieuwiox"
+
+  #       "507":
+  #         description: Server Error
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             errMsg:
+  #               type: string
+
+  #            example:
+  #             status: 507
+  #             errMsg: "something went wrong"
+
+  #       "403":
+  #         description: if invalid or expired token is passed
+  #         schema:
+  #            type: object
+  #            properties:
+  #             status:
+  #               type: integer
+  #             msg:
+  #               type: string
+  #            example:
+  #               status: 403
+  #               msg: "unauthorised"
+
+  # /save-filtered-campaign:
+  #   post:
+  #     tags:
+  #     - Custom API
+  #     summary: campaign created by filtered call
+  #     description: campaign created by filtered call
+  #     operationId: createAudienceAndCampaignController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/AudienceList'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  # /recordings:
+  #   get:
+  #     tags:
+  #     - Recordings
+  #     summary: get all Recordings
+  #     description: get Recordings
+  #     operationId: getRecordingController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  #   post:
+  #     tags:
+  #     - Recordings
+  #     summary: create Audience
+  #     description: create Audience
+  #     operationId: createRecordingController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/recordings'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  # /user:
+  #   post:
+  #     tags:
+  #     - User
+  #     summary: Create User
+  #     description: Create new user
+  #     operationId: createUser
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/create'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  # /campaigns/{id}:
+  #   get:
+  #     tags:
+  #     - Campaigns
+  #     summary: get Campaign by Id
+  #     description: get Campaign
+  #     operationId: getCampaignController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - name: id
+  #       in: path
+  #       description: The user ID.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  #   delete:
+  #     tags:
+  #     - Campaigns
+  #     summary: Delete Campaign by Id
+  #     description: Delete Campaign by Id
+  #     operationId: deleteCampaignController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - name: id
+  #       in: path
+  #       description: The user ID.
+  #       required: true
+  #       type: string
+  #       minimum: 1
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  # /campaigns:
+  #   get:
+  #     tags:
+  #     - Campaigns
+  #     summary: get Campaign
+  #     description: get all Campaign
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+  #   post:
+  #     tags:
+  #     - Campaigns
+  #     summary: create Campaign
+  #     description: create Campaign
+  #     operationId: createCampaignController
+  #     consumes:
+  #     - application/json
+  #     produces:
+  #     - application/json
+  #     parameters:
+  #     - name: Authorization
+  #       in: header
+  #       description: auth_key
+  #       required: true
+  #       type: string
+  #     - in: body
+  #       name: body
+  #       description: payload
+  #       required: true
+  #       schema:
+  #         $ref: '#/definitions/campaign'
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         schema:
+  #           $ref: '#/definitions/ApiResponse'
+  #       default:
+  #         description: error
+  #         schema:
+  #           $ref: '#/definitions/ErrorResponse'
+securityDefinitions:
+  Bearer:
+    description: |
+      for accessing the API, a valid JWT token must be passed
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  googleid:
+    type: object
+    properties:
+      id:
+        type: string
+
+  createProject:
+    type: object
+    properties:
+      projectName:
+        type: string
+        description: "your project name"
+      projectKey:
+        type: string
+        description: "your project key"
+      botPlatform:
+        type: string
+      accountId:
+        type: string
+        description: "your account Id"
+      callerIdNumber:
+        type: string
+      callTransferNumber:
+        type: string
+      whatsappId:
+        type: string
+      languageCode:
+        type: string
+      projectAccess:
+        type: array
+        items:
+          type: string
+        description: "your user Id which will be used to access the account."
+      voximPlantApikey:
+        type: string
+      voximPlantRuleId:
+        type: string
+      voximPlantAccountId:
+        type: string
+      description:
+        type: string
+        description: "your project description"
+    required:
+      - projectName
+      - botPlatform
+      - accountId
+      - languageCode
+      - projectAccess
+      - description
+
+  triggerCall:
+    type: object
+    properties:
+      callList:
+        type: array
+        items:
+          $ref: "#/definitions/AudienceList_audienceList"
+        description: you can add the extra parameters required for the call inside the array objects
+      projectId:
+        type: string
+
+  campaign:
+    type: object
+    properties:
+      audienceListId:
+        type: array
+        items:
+          type: string
+      campaignName:
+        type: string
+      projectId:
+        type: string
+
+  refresh_token:
+    type: object
+    properties:
+      token:
+        type: string
+      refresh_token:
+        type: string
+  trigger_call:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      mobileNumber:
+        type: string
+
+  recordings:
+    type: object
+    properties:
+      projectId:
+        type: string
+      projectName:
+        type: string
+      recordingName:
+        type: string
+      recordingUrl:
+        type: string
+      tag:
+        type: string
+      triggerKeywords:
+        type: string
+
+  # recordings:
+  #   type: object
+  #   properties:
+  #     projectId:
+  #       type: string
+  #     recordingName:
+  #       type: string
+  #     tag:
+  #       type: string
+  #     recordingUrl:
+  #       type: string
+  #     helperText:
+  #       type: string
+  #     isFromTemplate:
+  #       type: boolean
+
+  agentSetting:
+    type: object
+    properties:
+      projectId:
+        type: string
+      seletedType:
+        type: string
+      conversationData:
+        type: array
+        items:
+          type: object
+      agentName:
+        type: string
+      organisationName:
+        type: string
+      greetingMessage:
+        type: string
+      context:
+        type: string
+      rules:
+        type: string
+
+  agentSettingImport:
+    type: object
+    properties:
+      projectId:
+        type: string
+      agentId:
+        type: string
+
+  SampleAPi:
+    type: object
+
+  accountbasedGetRunCampaignDetails:
+    type: object
+    properties:
+      filterdata:
+        type: array
+        items:
+          type: string
+  create:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      confirmPassword:
+        type: string
+      countryCode:
+        type: string
+  runCampaign:
+    type: object
+    properties:
+      listname:
+        type: string
+      campaignrunid:
+        type: string
+      apikey:
+        type: string
+      ruleId:
+        type: string
+      accountId:
+        type: string
+      botPlatform:
+        type: string
+      unit:
+        type: string
+      currency:
+        type: string
+  token:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+
+
+  voximplantVerifyOtp:
+    type: object
+    properties:
+      callerIdNo:
+        type: string
+      code:
+        type: string
+      projectId:
+        type: string
+      type:
+        type: string
+
+  voximplantGetOtp:
+    type: object
+    properties:
+      friendly_name:
+        type: string
+      phone_number:
+        type: string
+
+  appointmentSetting:
+    type: object
+    properties:
+      project_Id:
+        type: string
+      appointmentBooked:
+        type: string
+      appointment_booked:
+        type: string
+      createdAt:
+        type: string
+      errorBookingAppointment:
+        type: string
+      error_booking_appointment:
+        type: string
+      noSlotsAvailable:
+        type: string
+      no_slots_available:
+        type: string
+      slotsAvailability:
+        type: string
+      slotsIndex:
+        type: array
+      slotsSeparator:
+        type: string
+      slots_availability:
+        type: string
+      slots_error:
+        type: string
+      slots_index:
+        type: string
+      slots_separator:
+        type: string
+      updatedAt:
+        type: string
+      
+      
+
+  defaultAgent:
+    type: object
+    properties:
+      agentId:
+        type: string
+
+  AudienceList:
+    type: object
+    properties:
+      audienceName:
+        type: string
+        description: give your audience list a name
+      # audienceList:
+      #   type: array
+      #   items:
+      #     type: object
+      source:
+        type: string
+        description: put hard code value as "manual"
+      projectId:
+        type: string
+        description: your project Id
+      audienceList:
+        type: array
+        items:
+          $ref: "#/definitions/AudienceList_audienceList"
+    required:
+      - audienceName
+      - projectId
+      - audienceList
+
+  advanceSetting:
+    type: object
+    properties:
+      apiKey:
+        type: string
+      ruleId:
+        type: string
+      accountId:
+        type: string
+      clientId:
+        type: string
+
+  callSetting:
+    type: object
+    properties:
+      projectId:
+        type: string
+      callerIdNumber:
+        type: string
+      callTransferNumber:
+        type: string
+      disconnectedTime:
+        type: string
+      asrEngine:
+        type: string
+      gateway:
+        type: string
+      checkDnc:
+        type: boolean
+      checkDnd:
+        type: boolean
+      checkUser:
+        type: boolean
+      voiceMailDetection:
+        type: boolean
+      responseFormat:
+        type: string
+      voice:
+        type: string
+      languageCode:
+        type: string
+      Interrupt:
+        type: string
+      model:
+        type: string
+      pauseBetweenSentence:
+        type: string
+      ringingDisconnect:
+        type: string
+      silentThreshold:
+        type: string
+      temperature:
+        type: string
+      transferGateway:
+        type: string
+      transferWebhook:
+        type: string
+
+  ApiResponse:
+    type: object
+    properties:
+      userId:
+        type: string
+      token:
+        type: string
+    example:
+      userId: 0
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lIjoiV2VkIE1hciAwMSAyMDIzIDE1OjA2OjQzIEdNVCswNTMwIChJbmRpYSBTdGFuZGFyZCBUaW1lKSIsInVzZXJJZCI6eyJ1c2VySWQiOiJONG11eFZCTjdxTnNhQzl1enBuQkd5a"
+
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+  AudienceList_audienceList:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+
+  Summary:
+    properties:
+      call_uuid:
+        type: string
+        title: Call Uuid
+    type: object
+    title: Summary
+    required:
+      - call_uuid
+  SummaryOutput:
+    properties:
+      summary:
+        type: string
+        title: Summary
+    type: object
+    required:
+      - summary
+    title: SummaryOutput
+  ValidationError:
+    properties:
+      loc:
+        items:
+          anyOf:
+            - type: string
+            - type: integer
+        type: array
+        title: Location
+      msg:
+        type: string
+        title: Message
+      type:
+        type: string
+        title: Error Type
+    type: object
+    required:
+      - loc
+      - msg
+      - type
+    title: ValidationError
+  HTTPValidationError:
+    properties:
+      detail:
+        items:
+          $ref: "#/definitions/ValidationError"
+        type: array
+        title: Detail
+    type: object
+    title: HTTPValidationError
+externalDocs:
+  description: Find out more about GenCall System
+  url: https://gencallsystem.com
