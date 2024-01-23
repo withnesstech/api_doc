@@ -248,29 +248,21 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "msg": {
-                "type": "string"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "acknowledged": {
-                    "type": "boolean"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "msg": { "type": "string" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "acknowledged": { "type": "boolean" },
+                        "deletedCount": { "type": "integer" },
+                      },
+                    "required": ["acknowledged", "deletedCount"],
                   },
-                  "deletedCount": {
-                    "type": "integer"
-                  }
-                },
-                "required": [
-                  "acknowledged",
-                  "deletedCount"
-                ]
               }
-            }
         default:
           description: error
           schema:
@@ -365,108 +357,94 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "totalCount": {
-                    "type": "integer"
-                  },
-                  "doc": {
-                    "type": "array",
-                    "items": [
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
                       {
-                        "type": "object",
-                        "properties": {
-                          "_id": {
-                            "type": "string"
-                          },
-                          "projectId": {
-                            "type": "string"
-                          },
-                          "audienceName": {
-                            "type": "string"
-                          },
-                          "source": {
-                            "type": "string"
-                          },
-                          "audienceList": {
+                        "totalCount": { "type": "integer" },
+                        "doc":
+                          {
                             "type": "array",
-                            "items": [
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "firstName": {
-                                    "type": "string"
-                                  },
-                                  "lastName": {
-                                    "type": "string"
-                                  },
-                                  "phone": {
-                                    "type": "string"
-                                  }
+                            "items":
+                              [
+                                {
+                                  "type": "object",
+                                  "properties":
+                                    {
+                                      "_id": { "type": "string" },
+                                      "projectId": { "type": "string" },
+                                      "audienceName": { "type": "string" },
+                                      "source": { "type": "string" },
+                                      "audienceList":
+                                        {
+                                          "type": "array",
+                                          "items":
+                                            [
+                                              {
+                                                "type": "object",
+                                                "properties":
+                                                  {
+                                                    "firstName":
+                                                      { "type": "string" },
+                                                    "lastName":
+                                                      { "type": "string" },
+                                                    "phone":
+                                                      { "type": "string" },
+                                                  },
+                                                "required":
+                                                  [
+                                                    "firstName",
+                                                    "lastName",
+                                                    "phone",
+                                                  ],
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties":
+                                                  {
+                                                    "firstName":
+                                                      { "type": "string" },
+                                                    "lastName":
+                                                      { "type": "string" },
+                                                    "phone":
+                                                      { "type": "string" },
+                                                  },
+                                                "required":
+                                                  [
+                                                    "firstName",
+                                                    "lastName",
+                                                    "phone",
+                                                  ],
+                                              },
+                                            ],
+                                        },
+                                      "createdAt": { "type": "string" },
+                                      "updatedAt": { "type": "string" },
+                                      "__v": { "type": "integer" },
+                                    },
+                                  "required":
+                                    [
+                                      "_id",
+                                      "projectId",
+                                      "audienceName",
+                                      "source",
+                                      "audienceList",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "__v",
+                                    ],
                                 },
-                                "required": [
-                                  "firstName",
-                                  "lastName",
-                                  "phone"
-                                ]
-                              },
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "firstName": {
-                                    "type": "string"
-                                  },
-                                  "lastName": {
-                                    "type": "string"
-                                  },
-                                  "phone": {
-                                    "type": "string"
-                                  }
-                                },
-                                "required": [
-                                  "firstName",
-                                  "lastName",
-                                  "phone"
-                                ]
-                              }
-                  ]
-                },
-                "createdAt": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "type": "string"
-                },
-                "__v": {
-                  "type": "integer"
-                }
-              },
-              "required": [
-                "_id",
-                "projectId",
-                "audienceName",
-                "source",
-                "audienceList",
-                "createdAt",
-                "updatedAt",
-                "__v"
-              ]
-            }
-          ]
-        }
-      },
-      "required": [
-        "totalCount",
-        "doc"
-      ]
-    }
-  }
-  
+                              ],
+                          },
+                      },
+                    "required": ["totalCount", "doc"],
+                  },
+              }
+
         default:
           description: error
           schema:
@@ -565,7 +543,7 @@ paths:
       tags:
         - "Call Trigger"
       summary: "Run Campaign"
-      description: "Run Campaign"
+      description: "Run Campaign. **You can also pass custom parameters which are written in '{}'s in Agent in the same object for every contact by passing the field name and value"
 
       x-swagger-router-controller: "triggerCallController"
       operationId: triggerAutomaticCallController
@@ -767,98 +745,72 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/agentSettingImport"
-          
+
       responses:
         "200":
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "msg": {
-                "type": "string"
-              },
-              "data": {
-                "type": "array",
-                "items": [
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "msg": { "type": "string" },
+                "data":
                   {
-                    "type": "object",
-                    "properties": {
-                      "projectId": {
-                        "type": "string"
-                      },
-                      "conversationData": {
-                        "type": "array",
-                        "items": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "input": {
-                                "type": "string"
-                              },
-                              "output": {
-                                "type": "string"
-                              }
+                    "type": "array",
+                    "items":
+                      [
+                        {
+                          "type": "object",
+                          "properties":
+                            {
+                              "projectId": { "type": "string" },
+                              "conversationData":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    [
+                                      {
+                                        "type": "object",
+                                        "properties":
+                                          {
+                                            "input": { "type": "string" },
+                                            "output": { "type": "string" },
+                                          },
+                                        "required": ["input", "output"],
+                                      },
+                                    ],
+                                },
+                              "agentName": { "type": "string" },
+                              "organisationName": { "type": "string" },
+                              "greetingMessage": { "type": "string" },
+                              "context": { "type": "string" },
+                              "rules": { "type": "string" },
+                              "objections": { "type": "array", "items": {} },
+                              "voicemailMessage": { "type": "string" },
+                              "createdAt": { "type": "string" },
+                              "updatedAt": { "type": "string" },
+                              "__v": { "type": "integer" },
                             },
-                            "required": [
-                              "input",
-                              "output"
-                            ]
-                          }
-                        ]
-                      },
-                      "agentName": {
-                        "type": "string"
-                      },
-                      "organisationName": {
-                        "type": "string"
-                      },
-                      "greetingMessage": {
-                        "type": "string"
-                      },
-                      "context": {
-                        "type": "string"
-                      },
-                      "rules": {
-                        "type": "string"
-                      },
-                      "objections": {
-                        "type": "array",
-                        "items": {}
-                      },
-                      "voicemailMessage": {
-                        "type": "string"
-                      },
-                      "createdAt": {
-                        "type": "string"
-                      },
-                      "updatedAt": {
-                        "type": "string"
-                      },
-                      "__v": {
-                        "type": "integer"
-                      }
-                    },
-                    "required": [
-                      "projectId",
-                      "conversationData",
-                      "agentName",
-                      "organisationName",
-                      "greetingMessage",
-                      "context",
-                      "rules",
-                      "objections",
-                      "voicemailMessage",
-                      "createdAt",
-                      "updatedAt",
-                      "__v"
-                    ]
-                  }
-                ]
+                          "required":
+                            [
+                              "projectId",
+                              "conversationData",
+                              "agentName",
+                              "organisationName",
+                              "greetingMessage",
+                              "context",
+                              "rules",
+                              "objections",
+                              "voicemailMessage",
+                              "createdAt",
+                              "updatedAt",
+                              "__v",
+                            ],
+                        },
+                      ],
+                  },
               }
-            }
 
         default:
           description: error
@@ -909,14 +861,8 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "msg": {
-                "type": "string"
-              }
-            }
+            "properties":
+              { "status": { "type": "integer" }, "msg": { "type": "string" } }
         default:
           description: error
           schema:
@@ -1061,88 +1007,46 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "array",
-                "items": [
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
                   {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string"
-                      },
-                      "projectId": {
-                        "type": "string"
-                      },
-                      "asrEngine": {
-                        "type": "string"
-                      },
-                      "gateway": {
-                        "type": "string"
-                      },
-                      "responseFormat": {
-                        "type": "string"
-                      },
-                      "voice": {
-                        "type": "string"
-                      },
-                      "languageCode": {
-                        "type": "string"
-                      },
-                      "voiceMailDetection": {
-                        "type": "boolean"
-                      },
-                      "interrupt": {
-                        "type": "boolean"
-                      },
-                      "silentThreshold": {
-                        "type": "integer"
-                      },
-                      "createdAt": {
-                        "type": "string" 
-                      },
-                      "updatedAt": {
-                        "type": "string"
-                      },
-                      "__v": {
-                        "type": "integer"
-                      },
-                      "callTransferNumber": {
-                        "type": "string"
-                      },
-                      "callerIdNumber": {
-                        "type": "string"
-                      },
-                      "checkDnc": {
-                        "type": "boolean"
-                      },
-                      "checkDnd": {
-                        "type": "boolean"
-                      },
-                      "checkUser": {
-                        "type": "boolean"
-                      },
-                      "disconnectedTime": {
-                        "type": "string"
-                      },
-                      "pauseBetweenSentence": {
-                        "type": "string"
-                      },
-                      "temperature": {
-                        "type": "string"
-                      },
-                      "transferWebhook": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                ]
+                    "type": "array",
+                    "items":
+                      [
+                        {
+                          "type": "object",
+                          "properties":
+                            {
+                              "_id": { "type": "string" },
+                              "projectId": { "type": "string" },
+                              "asrEngine": { "type": "string" },
+                              "gateway": { "type": "string" },
+                              "responseFormat": { "type": "string" },
+                              "voice": { "type": "string" },
+                              "languageCode": { "type": "string" },
+                              "voiceMailDetection": { "type": "boolean" },
+                              "interrupt": { "type": "boolean" },
+                              "silentThreshold": { "type": "integer" },
+                              "createdAt": { "type": "string" },
+                              "updatedAt": { "type": "string" },
+                              "__v": { "type": "integer" },
+                              "callTransferNumber": { "type": "string" },
+                              "callerIdNumber": { "type": "string" },
+                              "checkDnc": { "type": "boolean" },
+                              "checkDnd": { "type": "boolean" },
+                              "checkUser": { "type": "boolean" },
+                              "disconnectedTime": { "type": "string" },
+                              "pauseBetweenSentence": { "type": "string" },
+                              "temperature": { "type": "string" },
+                              "transferWebhook": { "type": "string" },
+                            },
+                        },
+                      ],
+                  },
               }
-            }
-            
+
         default:
           description: error
           schema:
@@ -1248,12 +1152,12 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 
-  /v1/verify-otp:
+  /api/v1/verify-otp:
     post:
       tags:
-        - "Voximplant"
-      summary: "Voximplant verify otp"
-      description: "Voximplant"
+        - "Twilio"
+      summary: "Twilio verify otp"
+      description: "Twilio"
 
       operationId: voximplantVerifyOtpController
       x-swagger-router-controller: "voximplantOtpController"
@@ -1286,33 +1190,27 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "msg": {
-                "type": "string"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "boolean"
-                  }
-                }
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "msg": { "type": "string" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties": { "status": { "type": "boolean" } },
+                  },
               }
-            }
         default:
           description: error
-          schema: 
+          schema:
             $ref: "#/definitions/ErrorResponse"
 
-  /v1/create-otp:
+  /twilio/caller_id/create:
     post:
       tags:
-        - "Voximplant"
-      summary: "Voximplant create otp"
-      description: "Voximplant"
+        - "Twilio"
+      summary: "Twilio create otp"
+      description: "Twilio"
       operationId: voximplantGetOtpController
       x-swagger-router-controller: "voximplantOtpController"
 
@@ -1344,11 +1242,7 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "otp": {
-                "type": "string"
-              }
-            }
+            "properties": { "otp": { "type": "string" } }
         default:
           description: error
           schema:
@@ -1475,34 +1369,23 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "msg": {
-                "type": "string"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "acknowledged": {
-                    "type": "boolean"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "msg": { "type": "string" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "acknowledged": { "type": "boolean" },
+                        "modifiedCount": { "type": "integer" },
+                        "upsertedId": { "type": "null" },
+                        "upsertedCount": { "type": "integer" },
+                        "matchedCount": { "type": "integer" },
+                      },
                   },
-                  "modifiedCount": {
-                    "type": "integer"
-                  },
-                  "upsertedId": {
-                    "type": "null"
-                  },
-                  "upsertedCount": {
-                    "type": "integer"
-                  },
-                  "matchedCount": {
-                    "type": "integer"
-                  }
-                },
               }
-            }
         default:
           description: error
           schema:
@@ -1618,57 +1501,41 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "totalDuration": {
-                    "type": "integer"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "totalDuration": { "type": "integer" },
+                        "totalCost": { "type": "string" },
+                        "balance": { "type": "string" },
+                        "onHoldBalance": { "type": "string" },
+                        "remainingMinutes": { "type": "integer" },
+                        "totalCallsMade": { "type": "integer" },
+                        "callStatus":
+                          {
+                            "type": "object",
+                            "properties":
+                              {
+                                "totalFailed": { "type": "integer" },
+                                "totalEnded": { "type": "integer" },
+                                "undefined": { "type": "integer" },
+                                "totalConnected": { "type": "integer" },
+                              },
+                            "required":
+                              [
+                                "totalFailed",
+                                "totalEnded",
+                                "undefined",
+                                "totalConnected",
+                              ],
+                          },
+                      },
                   },
-                "totalCost": {
-                  "type": "string"
-                },
-                "balance": {
-                  "type": "string"
-                },
-                "onHoldBalance": {
-                  "type": "string"
-                },
-                "remainingMinutes": {
-                  "type": "integer"
-                },
-                "totalCallsMade": {
-                  "type": "integer"
-                },
-                "callStatus": {
-                  "type": "object",
-                  "properties": {
-                    "totalFailed": {
-                      "type": "integer"
-                    },
-                    "totalEnded": {
-                      "type": "integer"
-                    },
-                    "undefined": {
-                      "type": "integer"
-                    },
-                    "totalConnected": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "totalFailed",
-                    "totalEnded",
-                    "undefined",
-                    "totalConnected"
-                  ]
-                }
               }
-          }
-        }
         default:
           description: error
           schema:
@@ -1706,37 +1573,24 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "2023-12-20": {
-                    "type": "integer"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "2023-12-20": { "type": "integer" },
+                        "2023-12-19": { "type": "integer" },
+                        "2023-12-18": { "type": "integer" },
+                        "2023-12-17": { "type": "integer" },
+                        "2023-12-16": { "type": "integer" },
+                        "2023-12-15": { "type": "integer" },
+                        "2023-12-14": { "type": "integer" },
+                      },
                   },
-                  "2023-12-19": {
-                    "type": "integer"
-                  },
-                  "2023-12-18": {
-                    "type": "integer"
-                  },
-                  "2023-12-17": {
-                    "type": "integer"
-                  },
-                  "2023-12-16": {
-                    "type": "integer"
-                  },
-                  "2023-12-15": {
-                    "type": "integer"
-                  },
-                  "2023-12-14": {
-                    "type": "integer"
-                  }
-                }
               }
-            }
             # $ref: "#/definitions/ApiResponse"
         default:
           description: error
@@ -1982,31 +1836,22 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "object",
-                "properties": {
-                  "acknowledged": {
-                    "type": "boolean"
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
+                  {
+                    "type": "object",
+                    "properties":
+                      {
+                        "acknowledged": { "type": "boolean" },
+                        "modifiedCount": { "type": "integer" },
+                        "upsertedId": { "type": "null" },
+                        "upsertedCount": { "type": "integer" },
+                        "matchedCount": { "type": "integer" },
+                      },
                   },
-                  "modifiedCount": {
-                    "type": "integer"
-                  },
-                  "upsertedId": {
-                    "type": "null"
-                  },
-                  "upsertedCount": {
-                    "type": "integer"
-                  },
-                  "matchedCount": {
-                    "type": "integer"
-                  }
-                },
               }
-            }
         default:
           description: error
           schema:
@@ -2061,65 +1906,43 @@ paths:
           description: Success
           schema:
             "type": "object"
-            "properties": {
-              "status": {
-                "type": "integer"
-              },
-              "data": {
-                "type": "array",
-                "items": [
+            "properties":
+              {
+                "status": { "type": "integer" },
+                "data":
                   {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string"
-                      },
-                      "projectId": {
-                        "type": "string"
-                      },
-                      "slots_availability": {
-                        "type": "string"
-                      },
-                      "slots_index": {
-                        "type": "array",
-                        "items": [
-                          {
-                            "type": "integer"
-                          },
-                          {
-                            "type": "integer"
-                          }
-                        ]
-                      },
-                      "slots_error": {
-                        "type": "string"
-                      },
-                      "no_slots_available": {
-                        "type": "string"
-                      },
-                      "error_booking_appointment": {
-                        "type": "string"
-                      },
-                      "appointment_booked": {
-                        "type": "string"
-                      },
-                      "slots_separator": {
-                        "type": "string"
-                      },
-                      "createdAt": {
-                        "type": "string"
-                      },
-                      "updatedAt": {
-                        "type": "string"
-                      },
-                      "__v": {
-                        "type": "integer"
-                      }
-                    },
-                  }
-                ]
+                    "type": "array",
+                    "items":
+                      [
+                        {
+                          "type": "object",
+                          "properties":
+                            {
+                              "_id": { "type": "string" },
+                              "projectId": { "type": "string" },
+                              "slots_availability": { "type": "string" },
+                              "slots_index":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    [
+                                      { "type": "integer" },
+                                      { "type": "integer" },
+                                    ],
+                                },
+                              "slots_error": { "type": "string" },
+                              "no_slots_available": { "type": "string" },
+                              "error_booking_appointment": { "type": "string" },
+                              "appointment_booked": { "type": "string" },
+                              "slots_separator": { "type": "string" },
+                              "createdAt": { "type": "string" },
+                              "updatedAt": { "type": "string" },
+                              "__v": { "type": "integer" },
+                            },
+                        },
+                      ],
+                  },
               }
-            }
         default:
           description: error
           schema:
@@ -2128,7 +1951,7 @@ paths:
   /analyze/summary:
     post:
       tags:
-        - analyze
+        - Analyze
       summary: Summarize
       operationId: summarize_analyze_summary_post
       parameters:
@@ -2137,38 +1960,32 @@ paths:
           type: string
           required: true
           description: authorization token obtained on the authentication API in "Bearer <token>" format or API key
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/definitions/Summary"
-        required: true
+        - in: body
+          name: body
+          description: payload
+          required: true
+          schema:
+            $ref: "#/definitions/Summary"
       responses:
         "200":
           description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/SummaryOutput"
+          schema:
+            $ref: "#/definitions/SummaryOutput"
         "422":
           description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/HTTPValidationError"
+          schema:
+            $ref: "#/definitions/HTTPValidationError"
 
   /analyze/transcript/{call_uuid}:
     get:
       tags:
-        - analyze
+        - Analyze
       summary: Gets ths transcript of a call UUID
       description: Gets the transcript of a call
       operationId: get_transcript_analyze_transcript__call_uuid__get
       parameters:
         - required: true
-          schema:
-            type: string
-            title: Call Uuid
+          type: string
           name: call_uuid
           in: path
         - in: header
@@ -2179,15 +1996,11 @@ paths:
       responses:
         "200":
           description: Successful Response
-          content:
-            application/json:
-              schema: {}
+          schema: {}
         "422":
           description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/HTTPValidationError"
+          schema:
+            $ref: "#/definitions/HTTPValidationError"
 
   # /refresh-token:
   #   post:
@@ -2257,7 +2070,7 @@ paths:
   #     tags:
   #     - Call Trigger
   #     summary: trigger individual calls on mobile number with Voximplant(service Provider)
-  #     description: with this API we can directly call any number, given all the setups has been done manually in the witness account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
+  #     description: with this API we can directly call any number, given all the setups has been done manually in the vodex account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
   #     consumes:
   #     - application/json
   #     produces:
@@ -2323,8 +2136,8 @@ paths:
   #   post:
   #     tags:
   #     - Call Trigger
-  #     summary: trigger individual calls on mobile number with witness(service Provider)
-  #     description: with this API we can directly call any number, given all the setups has been done manually in the witness account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
+  #     summary: trigger individual calls on mobile number with Vodex(service Provider)
+  #     description: with this API we can directly call any number, given all the setups has been done manually in the vodex account to trigger the call, it will automatically create audience list, campaign and trigger campaign runs to execute call on the number.
   #     consumes:
   #     - application/json
   #     produces:
@@ -2534,7 +2347,7 @@ paths:
   #               {
   #                 id: "Uc7nKPpj3mHyciajL3eB",
   #                 audienceListName: "test",
-  #                 userEmail: "api_test@witness.ai",
+  #                 userEmail: "api_test@vodex.ai",
   #                 source: "manual",
   #                 audienceList: [
   #                   {
@@ -2780,7 +2593,7 @@ paths:
   #               {
   #                 id: "Uc7nKPpj3mHyciajL3eB",
   #                 audienceListName: "test",
-  #                 userEmail: "api_test@witness.ai",
+  #                 userEmail: "api_test@vodex.ai",
   #                 source: "manual",
   #                 audienceList: [
   #                   {
@@ -3150,12 +2963,12 @@ definitions:
         items:
           type: string
         description: "your user Id which will be used to access the account."
-      voximPlantApikey:
-        type: string
-      voximPlantRuleId:
-        type: string
-      voximPlantAccountId:
-        type: string
+      # voximPlantApikey:
+      #   type: string
+      # voximPlantRuleId:
+      #   type: string
+      # voximPlantAccountId:
+      #   type: string
       description:
         type: string
         description: "your project description"
@@ -3317,7 +3130,6 @@ definitions:
       password:
         type: string
 
-
   voximplantVerifyOtp:
     type: object
     properties:
@@ -3343,38 +3155,20 @@ definitions:
     properties:
       project_Id:
         type: string
-      appointmentBooked:
-        type: string
-      appointment_booked:
-        type: string
-      createdAt:
-        type: string
-      errorBookingAppointment:
-        type: string
-      error_booking_appointment:
-        type: string
-      noSlotsAvailable:
-        type: string
-      no_slots_available:
-        type: string
       slotsAvailability:
         type: string
       slotsIndex:
         type: array
+      slotsError:
+        type: string
+      noSlotsAvailable:
+        type: string
+      errorBookingAppointment:
+        type: string
+      appointmentBooked:
+        type: string
       slotsSeparator:
         type: string
-      slots_availability:
-        type: string
-      slots_error:
-        type: string
-      slots_index:
-        type: string
-      slots_separator:
-        type: string
-      updatedAt:
-        type: string
-      
-      
 
   defaultAgent:
     type: object
@@ -3513,10 +3307,6 @@ definitions:
   ValidationError:
     properties:
       loc:
-        items:
-          anyOf:
-            - type: string
-            - type: integer
         type: array
         title: Location
       msg:
